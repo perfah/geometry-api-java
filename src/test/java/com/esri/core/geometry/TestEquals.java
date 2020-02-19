@@ -190,45 +190,4 @@ public class TestEquals extends TestCase {
 		assertTrue(isEqual);
 	}
 
-	@Test
-	public void testEqualsOn2DPoints() {
-		int x = 10;
-		int y = 15;
-
-		Point2D base = new Point2D(x,y);
-		Point2D comp = new Point2D(x,y);
-
-		boolean isEqual;
-
-		isEqual = base.equals(base);
-		assertTrue(isEqual);
-
-		isEqual = base.equals(comp);
-		assertTrue(isEqual);
-
-		comp.setCoords(x, y+1);
-
-		isEqual = base.equals(comp);
-		assertFalse(isEqual);
-
-		Point3D comp3D = new Point3D(x,y,10);
-		isEqual = base.equals(comp3D);
-		assertFalse(isEqual);
-	}
-
-	@Test
-	public void testEqualsOn2DCoordinates() {
-		Point2D p = new Point2D();
-		double x = 10;
-		double y = 10;
-		double z = 15;
-
-		boolean isEqual;
-
-		isEqual = p.isEqual(x, y);
-		assertTrue(isEqual);
-
-		isEqual = p.isEqual(x, z);
-		assertFalse(isEqual);
-	}
 }
