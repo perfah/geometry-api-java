@@ -312,4 +312,40 @@ public class TestPoint extends TestCase {
 
 		));
 	}
+
+	@Test
+	public void test2DOffset() {
+		Point2D p1 = new Point2D(0,0);
+		Point2D p2 = new Point2D(0,0);
+		Point2D base = new Point2D(5,10);
+		double offset;
+		double expected;
+
+		offset = base.offset(p1, p2);
+		expected = Math.sqrt((base.x-p1.x)*(base.x-p1.x)+(base.y-p1.y)*(base.y-p1.y));
+		assertEquals(offset, expected);
+
+		p2.setCoords(10, 0);
+		offset = base.offset(p1,p2);
+		expected = -10; //5*0-10*10
+		assertEquals(offset, expected);
+
+		p2.setCoords(0, 10);
+		offset = base.offset(p1,p2);
+		expected = 50; //5*10-10*0
+		assertEquals(offset, expected);
+
+
+	}
+
+	@Test
+	public void testRightPerpendicular() {
+		Point2D p = new Point2D(10,5);
+
+		p.rightPerpendicular(p);
+
+		assertEquals(p.x,5);
+
+		assertEquals(p.y,-10);
+	}
 }
