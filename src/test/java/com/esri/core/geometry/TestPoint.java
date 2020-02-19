@@ -234,4 +234,82 @@ public class TestPoint extends TestCase {
 		env.replaceNaNs(VertexDescription.Semantics.Z, 5);
 		assertTrue(env.queryInterval(VertexDescription.Semantics.Z, 0).equals(new Envelope1D(5, 5)));
 	}	
+
+	@Test
+	public void testEqualsOn2DPoints() {
+		int x = 10;
+		int y = 15;
+
+		Point2D base = new Point2D(x,y);
+		Point2D comp = new Point2D(x,y);
+
+		boolean isEqual;
+
+		isEqual = base.equals(base);
+		assertTrue(isEqual);
+
+		isEqual = base.equals(comp);
+		assertTrue(isEqual);
+
+		comp.setCoords(x, y+1);
+
+		isEqual = base.equals(comp);
+		assertFalse(isEqual);
+
+		Point3D comp3D = new Point3D(x,y,10);
+		isEqual = base.equals(comp3D);
+		assertFalse(isEqual);
+	}
+
+	@Test
+	public void testEqualsOn2DCoordinates() {
+		Point2D p = new Point2D();
+		double x = 10;
+		double y = 10;
+		double z = 15;
+
+		boolean isEqual;
+
+		isEqual = p.isEqual(x, y);
+		assertTrue(isEqual);
+
+		isEqual = p.isEqual(x, z);
+		assertFalse(isEqual);
+	}
+
+	@Test
+	public void test2DNorm() {
+		Point2D p1 = new Point2D(10,5);
+		int metric;
+		double d;
+
+		metric = -1;
+		d = p1._norm(metric);
+		assertTrue(NumberUtils.isNaN(d));
+
+		// L-infinite norm
+		metric = 0;
+		d = p1._norm(metric);
+		assertTrue(d==p1.x);
+
+		// L1, manhattan norm
+		metric = 1;
+		d = p1._norm(metric);
+		assertTrue(d==(p1.x+p1.y));
+
+		// L2, euclidian norm
+		metric = 2;
+		d = p1._norm(metric);
+		assertTrue(d==(Math.sqrt(p1.x*p1.x+p1.y*p1.y)));
+
+		// Default
+		metric = 3;
+		d = p1._norm(metric);
+		assertTrue(d==(
+			Math.pow(	Math.pow(p1.x, (double) metric) + 
+						Math.pow(p1.y, (double) metric),
+						1.0 / (double) metric)
+
+		));
+	}
 }
