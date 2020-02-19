@@ -263,7 +263,7 @@ public class TestPoint extends TestCase {
 
 	@Test
 	public void testEqualsOn2DCoordinates() {
-		Point2D p = new Point2D();
+		Point2D p = new Point2D(10,10);
 		double x = 10;
 		double y = 10;
 		double z = 15;
@@ -332,7 +332,7 @@ public class TestPoint extends TestCase {
 
 		p2.setCoords(0, 10);
 		offset = base.offset(p1,p2);
-		expected = 50; //5*10-10*0
+		expected = 5; //5*10-10*0
 		assertEquals(offset, expected);
 
 
@@ -344,8 +344,8 @@ public class TestPoint extends TestCase {
 
 		p.rightPerpendicular(p);
 
-		assertEquals(p.x,5);
+		assertEquals(p.x,5.0);
 
-		assertEquals(p.y,-10);
+		assertEquals(p.y,-5.0);
 	}
 }
