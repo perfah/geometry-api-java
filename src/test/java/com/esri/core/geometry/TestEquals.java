@@ -189,4 +189,5 @@ public class TestEquals extends TestCase {
 
 		assertTrue(isEqual);
 	}
+
 }
