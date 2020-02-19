@@ -9,6 +9,18 @@ public class BranchCoverage {
     private static HashMap<String, BranchCoverage> instances = new HashMap<>();
     private HashMap<Integer, Boolean> coverage;
     private int pos;
+    private boolean returned;
+
+    public static void printOnExit(){
+        Runtime.getRuntime().addShutdownHook(new Thread(new Runnable() {
+            public void run() {
+                synchronized (instances){
+                    for(BranchCoverage bc : instances.values())
+                        System.out.println(bc.toString());
+                }
+            }
+        }, "Shutdown-thread"));
+    }
 
     public static BranchCoverage ofFunction(String funcName){
         BranchCoverage bc = BranchCoverage.instances.getOrDefault(funcName, new BranchCoverage(funcName));
@@ -34,12 +46,12 @@ public class BranchCoverage {
         boolean pathAlreadyChoosen = ifCondition;
 
         // IF
-        coverage.put(pos,  ifCondition || coverage.getOrDefault(pos, false));
+        coverage.put(pos,  (!returned && ifCondition) || coverage.getOrDefault(pos, false));
         pos++;
 
         // ELSE-IF
         for(boolean elseIfCond : elseIfConditions){
-            coverage.put(pos,  (!pathAlreadyChoosen && elseIfCond) || coverage.getOrDefault(pos, false));
+            coverage.put(pos,  (!returned && !pathAlreadyChoosen && elseIfCond) || coverage.getOrDefault(pos, false));
             pos++;
 
             if(!pathAlreadyChoosen)
@@ -47,8 +59,12 @@ public class BranchCoverage {
         }
 
         // ELSE / NOTHING
-        coverage.put(pos, !pathAlreadyChoosen || coverage.getOrDefault(pos, false));
+        coverage.put(pos, (!returned && !pathAlreadyChoosen) || coverage.getOrDefault(pos, false));
         pos++;
+    }
+
+    public void simulateReturn(){
+        returned = true;
     }
 
     public int countVisitedBranches(){
@@ -71,7 +87,7 @@ public class BranchCoverage {
     @Override
     public String toString() {
         return
-                "\n ### BRANCH COVERAGE REPORT FOR " + funcName + " ###\n" +
+                "\n ### BRANCH COVERAGE REPORT FOR FUNCTION '" + funcName + "' ###\n" +
                         "   * Visisted branches: " + countVisitedBranches() + "\n" +
                         "   * Total branches: " + countTotalBranches() + "\n" +
                         "   * Coverage: " + (int)(100 * getBranchCoverageRatio()) + "%\n";
