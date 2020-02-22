@@ -398,9 +398,7 @@ public final class Point2D implements Serializable{
 	// for predefined metrics, use the DistanceMetricEnum defined in WKSPoint.h
 	double _norm(int metric) {
 		BranchCoverage bc = BranchCoverage.ofFunction("Point2D::_norm");
-		bc.printOnExit();
 
-		
 		bc.addBranchingPoint((metric < 0 || _isNan()));
 
 		bc.addBranchingPoint(metric == 0);
