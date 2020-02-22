@@ -397,7 +397,19 @@ public final class Point2D implements Serializable{
 	// 0: used for L-infinite (max(fabs(x), fabs(y))
 	// for predefined metrics, use the DistanceMetricEnum defined in WKSPoint.h
 	double _norm(int metric) {
-		if (metric < 0 || _isNan())
+		BranchCoverage bc = BranchCoverage.ofFunction("Point2D::_norm");
+		bc.printOnExit();
+
+		
+		bc.addBranchingPoint((metric < 0 || _isNan()));
+
+		bc.addBranchingPoint(metric == 0);
+		bc.addBranchingPoint(metric == 1);
+		bc.addBranchingPoint(metric == 2);
+		bc.addBranchingPoint(metric == 3);
+
+
+		if (metric < 0 || _isNan()) 
 			return NumberUtils.NaN();
 
 		switch (metric) {
