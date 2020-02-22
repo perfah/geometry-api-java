@@ -734,9 +734,22 @@ public final class Line extends Segment implements Serializable {
 		return _isIntersectingHelper(line1, line2) == false ? 0 : 1;
 	}
 
-	int _intersectLineLineExact(Line line1, Line line2,
-			Point2D[] intersectionPoints, double[] param1, double[] param2) {
+	public int intersectLineLineExact(com.esri.core.geometry.Line line1, com.esri.core.geometry.Line line2,
+							   Point2D[] intersectionPoints, double[] param1, double[] param2) {
+
+		// Branching coverage logic:
+		BranchCoverage bc = BranchCoverage.ofFunction("Line::intersectLineLineExact");
+
+		boolean if1 = line1.m_xStart == line2.m_xStart && line1.m_yStart == line2.m_yStart;
+		bc.addBranchingPoint(if1);
+		bc.addBranchingPoint(if1 && param1 != null);
+		bc.addBranchingPoint(if1 && param2 != null);
+		bc.addBranchingPoint(if1 && intersectionPoints != null);
+
+		// Actual code:
+
 		int counter = 0;
+
 		if (line1.m_xStart == line2.m_xStart
 				&& line1.m_yStart == line2.m_yStart) {
 			if (param1 != null)// if (param1)
@@ -751,6 +764,12 @@ public final class Line extends Segment implements Serializable {
 			counter++;
 		}
 
+		boolean if2 = line1.m_xStart == line2.m_xEnd && line1.m_yStart == line2.m_yEnd;
+		bc.addBranchingPoint(if2);
+		bc.addBranchingPoint(if2 && param1 != null);
+		bc.addBranchingPoint(if2 && param2 != null);
+		bc.addBranchingPoint(if2 && intersectionPoints != null);
+
 		if (line1.m_xStart == line2.m_xEnd && line1.m_yStart == line2.m_yEnd) {
 			if (param1 != null)// if (param1)
 				param1[counter] = 0.0;
@@ -763,6 +782,16 @@ public final class Line extends Segment implements Serializable {
 
 			counter++;
 		}
+
+		boolean if3 = line1.m_xEnd == line2.m_xStart && line1.m_yEnd == line2.m_yStart;
+		boolean if3_sub = counter == 2;
+		bc.addBranchingPoint(if3);
+		bc.addBranchingPoint(if3 && if3_sub && param1 != null);
+		bc.addBranchingPoint(if3 && if3_sub && param2 != null);
+		bc.addBranchingPoint(if3 && if3_sub && intersectionPoints != null);
+		bc.addBranchingPoint(if3 && param1 != null);
+		bc.addBranchingPoint(if3 && param2 != null);
+		bc.addBranchingPoint(if3 && intersectionPoints != null);
 
 		if (line1.m_xEnd == line2.m_xStart && line1.m_yEnd == line2.m_yStart) {
 			if (counter == 2) {// both segments a degenerate
@@ -784,7 +813,8 @@ public final class Line extends Segment implements Serializable {
 							line1.m_yEnd);
 				}
 
-				return counter;
+				bc.simulateReturn();
+				//return counter;
 			}
 
 			if (param1 != null)// if (param1)
@@ -798,6 +828,16 @@ public final class Line extends Segment implements Serializable {
 
 			counter++;
 		}
+
+		boolean if4 = line1.m_xEnd == line2.m_xEnd && line1.m_yEnd == line2.m_yEnd;
+		boolean if4_sub = counter == 2;
+		bc.addBranchingPoint(if3);
+		bc.addBranchingPoint(if4 && if4_sub && param1 != null);
+		bc.addBranchingPoint(if4 && if4_sub && param2 != null);
+		bc.addBranchingPoint(if4 && if4_sub && intersectionPoints != null);
+		bc.addBranchingPoint(if4 && param1 != null);
+		bc.addBranchingPoint(if4 && param2 != null);
+		bc.addBranchingPoint(if4 && intersectionPoints != null);
 
 		if (line1.m_xEnd == line2.m_xEnd && line1.m_yEnd == line2.m_yEnd) {
 			if (counter == 2) {// both segments are degenerate
@@ -818,8 +858,8 @@ public final class Line extends Segment implements Serializable {
 					intersectionPoints[1] = Point2D.construct(line1.m_xEnd,
 							line1.m_yEnd);
 				}
-
-				return counter;
+				bc.simulateReturn();
+				//return counter;
 			}
 
 			if (param1 != null)// if (param1)
