@@ -40,8 +40,6 @@ public class TestPolygonUtils extends TestCase {
 
 	@Test
 	public void testIntersectLineLineExact(){
-		BranchCoverage bc = BranchCoverage.ofFunction("Line::intersectLineLineExact");
-
 		Line a;
 		Line b;
 		Point2D[] intersectionPoints = null;
