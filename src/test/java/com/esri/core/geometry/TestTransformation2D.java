@@ -8,8 +8,6 @@ import javax.xml.crypto.dsig.Transform;
 public class TestTransformation2D extends TestCase {
     @Test
     public void testEquals(){
-        BranchCoverage.ofFunction("Transformation2D::equals");
-
         Transformation2D t1 = new Transformation2D(1.0);
         Transformation2D t2 = new Transformation2D(1.0);
         Transformation2D t3 = new Transformation2D(0.5);
