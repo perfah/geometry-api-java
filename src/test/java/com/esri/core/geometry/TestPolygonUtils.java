@@ -39,6 +39,55 @@ public class TestPolygonUtils extends TestCase {
 	}
 
 	@Test
+	public void testIntersectLineLineExact(){
+		Line a;
+		Line b;
+		Point2D[] intersectionPoints = null;
+		double[] params1 = null;
+		double[] params2 = null;
+
+		// Null path:
+		a  = new Line(0.0, 0.0, 1.0, 1.0);
+		b =  new Line(0.0, 1.0, 1.0, 2.0);
+		assertEquals(a.intersectLineLineExact(a, b, intersectionPoints, params1, params2), 0);
+
+		// Test with actual values:
+		intersectionPoints = new Point2D[]{new Point2D(), new Point2D(), new Point2D(), new Point2D()};
+		params1 = new double[]{ 0.0, 0.0, 0.0, 0.0 };
+		params2 = new double[]{ 0.0, 0.0, 0.0, 0.0 };
+
+		// Starting and ending in the same point:
+		a = new Line(0.0, 0.0, 1.0, 1.0);
+		b = new Line(0.0, 0.0, 1.0, 1.0);
+		assertEquals(a.intersectLineLineExact(a, b, intersectionPoints, params1, params2), 2);
+
+		// Line A starts where line B ends and vice versa:
+		a = new Line(1.0, 1.0, 0.0, 0.0);
+		b = new Line(0.0, 0.0, 1.0, 1.0);
+		assertEquals(a.intersectLineLineExact(a, b, intersectionPoints, params1, params2), 2);
+
+		// All points are the same:
+		a = new Line(0.0, 0.0, 0.0, 0.0);
+		b = new Line(0.0, 0.0, 0.0, 0.0);
+		assertEquals(a.intersectLineLineExact(a, b, intersectionPoints, params1, params2), 2);
+
+		// Line A starts where line B ends and vice versa (mirror opposite):
+		a = new Line(0.0, 0.0, 1.0, 1.0);
+		b = new Line(1.0, 1.0, 0.0, 0.0);
+		assertEquals(a.intersectLineLineExact(a, b, intersectionPoints, params1, params2), 2);
+
+		// One point in common:
+		a = new Line(0.0, 0.0, 1.0, 1.0);
+		b = new Line(1.0, 1.0, 5.0, 5.0);
+		assertEquals(a.intersectLineLineExact(a, b, intersectionPoints, params1, params2), 1);
+
+		// All points are different:
+		a = new Line(0.0, 0.0, 1.0, 1.0);
+		b = new Line(2.0, 2.0, 3.0, 3.0);
+		assertEquals(a.intersectLineLineExact(a, b, intersectionPoints, params1, params2), 0);
+	}
+
+	@Test
 	public static void testPointInAnyOuterRing() {
 		Polygon polygon = new Polygon();
 		// outer ring1

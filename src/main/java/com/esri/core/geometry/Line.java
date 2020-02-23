@@ -766,8 +766,8 @@ public final class Line extends Segment implements Serializable {
 		return _isIntersectingHelper(line1, line2) == false ? 0 : 1;
 	}
 
-	int _intersectLineLineExact(Line line1, Line line2,
-			Point2D[] intersectionPoints, double[] param1, double[] param2) {
+	public int intersectLineLineExact(Line line1, Line line2,
+							   Point2D[] intersectionPoints, double[] param1, double[] param2) {
 		int counter = 0;
 		if (line1.m_xStart == line2.m_xStart
 				&& line1.m_yStart == line2.m_yStart) {
