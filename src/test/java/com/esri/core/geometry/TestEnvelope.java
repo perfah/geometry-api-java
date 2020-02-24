@@ -267,6 +267,19 @@ public class TestEnvelope
 		env1.queryInterval(VertexDescription.Semantics.POSITION, 0).equals(new Envelope1D(9, 13));
 	}
 	
+	@Test
+	public void testReaspect() {
+		Envelope2D env = new Envelope2D(1,1,5,5);
+
+		env.reaspect(15.0, 5.0);
+
+		assertEquals(env.xmax,9.0,0.000001);
+		assertEquals(env.xmin,-3.0,0.000001);
+		assertEquals(env.ymax,5.0,0.000001);
+		assertEquals(env.ymin,1.0,0.000001);
+
+
+	}
 	private static void assertIntersection(Envelope envelope, Envelope other, Envelope intersection) {
 		boolean intersects = envelope.intersect(other);
 		assertTrue(intersects);
