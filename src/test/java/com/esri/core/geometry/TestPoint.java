@@ -290,25 +290,24 @@ public class TestPoint extends TestCase {
 		// L-infinite norm
 		metric = 0;
 		d = p1._norm(metric);
-		assertTrue(d==p1.x);
+		assertEquals(d,10.0);
 
 		// L1, manhattan norm
 		metric = 1;
 		d = p1._norm(metric);
-		assertTrue(d==(p1.x+p1.y));
+		assertEquals(d,15.0);
 
 		// L2, euclidian norm
 		metric = 2;
 		d = p1._norm(metric);
-		assertTrue(d==(Math.sqrt(p1.x*p1.x+p1.y*p1.y)));
+		assertEquals(d,(Math.sqrt(125.0)));
 
 		// Default
 		metric = 3;
 		d = p1._norm(metric);
-		assertTrue(d==(
-			Math.pow(	Math.pow(p1.x, (double) metric) + 
-						Math.pow(p1.y, (double) metric),
-						1.0 / (double) metric)
+		assertEquals(d,(
+			Math.pow(	1125.0,
+						1.0 / 3.0)
 
 		));
 	}
@@ -322,17 +321,17 @@ public class TestPoint extends TestCase {
 		double expected;
 
 		offset = base.offset(p1, p2);
-		expected = Math.sqrt((base.x-p1.x)*(base.x-p1.x)+(base.y-p1.y)*(base.y-p1.y));
+		expected = Math.sqrt(125);
 		assertEquals(offset, expected);
 
 		p2.setCoords(10, 0);
 		offset = base.offset(p1,p2);
-		expected = -10; //5*0-10*10
+		expected = -10;
 		assertEquals(offset, expected);
 
 		p2.setCoords(0, 10);
 		offset = base.offset(p1,p2);
-		expected = 5; //5*10-10*0
+		expected = 5;
 		assertEquals(offset, expected);
 
 
@@ -342,10 +341,20 @@ public class TestPoint extends TestCase {
 	public void testRightPerpendicular() {
 		Point2D p = new Point2D(10,5);
 
-		p.rightPerpendicular(p);
-
+		p.rightPerpendicular();
 		assertEquals(p.x,5.0);
+		assertEquals(p.y,-10.0);
 
-		assertEquals(p.y,-5.0);
+		p = new Point2D(10,-5);
+		p.rightPerpendicular();
+		assertEquals(p.x,-5.0);
+		assertEquals(p.y,-10.0);
+
+		p = new Point2D(-10,-5);
+		p.rightPerpendicular();
+		assertEquals(p.x,-5.0);
+		assertEquals(p.y,10.0);
+
+		
 	}
 }
