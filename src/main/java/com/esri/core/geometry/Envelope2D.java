@@ -472,6 +472,10 @@ public final class Envelope2D implements Serializable {
 	}
 
 	public void reaspect(double arWidth, double arHeight) {
+		BranchCoverage bc = BranchCoverage.ofFunction("Envelope2D::reaspect");
+
+		bc.addBranchingPoint(isEmpty());
+
 		if (isEmpty())
 			return;
 		double newAspectRatio = arWidth / arHeight;
@@ -479,6 +483,10 @@ public final class Envelope2D implements Serializable {
 		double heightHalf = getHeight() * 0.5;
 
 		double newWidthHalf = heightHalf * newAspectRatio;
+
+		bc.addBranchingPoint(widthHalf <= newWidthHalf);
+		bc.addBranchingPoint(widthHalf > newWidthHalf);
+
 		if (widthHalf <= newWidthHalf) {// preserve height, increase width
 			double xc = getCenterX();
 			xmin = xc - newWidthHalf;

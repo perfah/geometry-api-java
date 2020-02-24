@@ -67,6 +67,10 @@ public final class Point2D implements Serializable{
 	}
 
 	public boolean isEqual(Point2D other) {
+		BranchCoverage bc = BranchCoverage.ofFunction("Point2D::isEqual");
+
+		bc.addBranchingPoint(x == other.x && y == other.y);
+
 		return x == other.x && y == other.y;
 	}
 	
@@ -84,14 +88,22 @@ public final class Point2D implements Serializable{
 	
 	@Override
 	public boolean equals(Object other) {
+		BranchCoverage bc = BranchCoverage.ofFunction("Point2D::equals");
+
+		bc.addBranchingPoint(other == this);
+
 		if (other == this)
 			return true;
+
+		bc.addBranchingPoint(!(other instanceof Point2D));
 
 		if (!(other instanceof Point2D))
 			return false;
 		
 		Point2D v = (Point2D)other;
 		
+		bc.addBranchingPoint(x == v.x && y == v.y);
+
 		return x == v.x && y == v.y;
 	}
 
@@ -272,6 +284,8 @@ public final class Point2D implements Serializable{
 	 * RotateDirect(-cos(pi/2), sin(-pi/2)).
 	 */
 	public void rightPerpendicular() {
+		BranchCoverage bc = BranchCoverage.ofFunction("Point2D::rightPerpendicular");
+		bc.addBranchingPoint(true);
 		double xx = x;
 		x = y;
 		y = -xx;
@@ -435,8 +449,13 @@ public final class Point2D implements Serializable{
 	 * are equal, the (positive) distance of this point to p_1 is returned.
 	 */
 	double offset(/* const */Point2D pt1, /* const */Point2D pt2) {
+		BranchCoverage bc = BranchCoverage.ofFunction("Point2D::offset");
+
 		double newDistance = distance(pt1, pt2);
 		Point2D p = construct(x, y);
+
+		bc.addBranchingPoint(newDistance == 0.0);
+
 		if (newDistance == 0.0)
 			return distance(p, pt1);
 
@@ -447,6 +466,7 @@ public final class Point2D implements Serializable{
 		p.sub(pt1);
 
 		double cross = p.crossProduct(p2);
+
 		return cross / newDistance;
 	}
 
