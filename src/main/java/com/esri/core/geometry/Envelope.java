@@ -512,7 +512,8 @@ public class Envelope extends Geometry implements Serializable {
 
 		m_envelope.queryCorners(dst);
 	}
-
+ // This will do the calculations that the function queryCornerByVal did in every case in the switch, 
+ //by doing this the cyclomatic complexity is reduced.
 	public void helper(int v, int nattrib, Point ptDst){
 		
 		for (int i = 0; i < nattrib; i++) {

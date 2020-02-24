@@ -19,6 +19,8 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 
+import java.beans.Transient;
+
 public class TestEnvelope
 {
 	@Test
@@ -110,6 +112,7 @@ public class TestEnvelope
 	}
 	
 	@Test
+	/**Caluculates the distance between the envlelope and a 2D point */
 	public void testSqrDistances(){
 		//the point is on the envelope, which means that the distance is 0
 		Envelope2D env0 = new Envelope2D(1, 1, 4, 4);
@@ -122,6 +125,107 @@ public class TestEnvelope
 		assertTrue(env0.sqrDistance(p1) == 1.0);
 
 	}
+	/**The functon returns the max distance between two envelopes */
+@Test 
+	public void testsqrMaxDistance(){
+		// If one of the envelopes is empty the funtions should return NaN
+		Envelope2D env0 = new Envelope2D();
+		Envelope2D env1 = new Envelope2D(1, 1, 4, 4);
+
+		double a = env0.sqrMaxDistance(env1);
+		// NaN does not equals NaN
+		assertTrue(a != a);
+		
+		//A testacase that covers the rest of the branches
+		Envelope2D env2 = new Envelope2D(5,1,6,1);
+		Envelope2D env3 = new Envelope2D(1, 1, 4, 4);
+		
+		assertTrue(env2.sqrMaxDistance(env3) == 34.0);
+	}
+	/** Snaps a point to the boandary of the envelope */
+	@Test
+	public void test_snapToBoundary(){
+		//Test if the point snaps to the boandry if the points has the same y-min value
+		Envelope2D env0 = new Envelope2D(1, 1, 4, 4);
+		Point2D p0 = new Point2D(5,1);
+		Point2D p1 = new Point2D(4,1);
+
+		p0 = env0._snapToBoundary(p0);
+		
+		assertTrue(p0.equals(p1));
+
+		//Test if the the point is on the boundary of the envelope
+		Envelope2D env1 = new Envelope2D(1, 1, 4, 4);
+		Point2D p2 = new Point2D(1,4);
+		Point2D p3 = new Point2D(1,4);
+
+		p2 = env0._snapToBoundary(p2);
+		
+		assertTrue(p2.equals(p3));
+
+		//Test if the point is inside the envelope
+		Envelope2D env3 = new Envelope2D(1, 1, 4, 4);
+		Point2D p4 = new Point2D(2,2);
+		Point2D p5 = new Point2D(2,1);
+
+		p4 = env0._snapToBoundary(p4);
+		assertTrue(p4.equals(p5));
+
+	}
+	// Calculates distance of point from lower left corner of envelope,
+    // moving clockwise along the envelope boundary.
+    // The input point is assumed to lie exactly on envelope boundary
+    // If this is not the case then a projection to the nearest position on the
+    // envelope boundary is performed.
+    // (If the user knows that the input point does most likely not lie on the
+    // boundary,
+    // it is more efficient to perform ProjectToBoundary before using this
+	// function)
+	
+	@Test
+	public void test_boundaryDistance(){
+		//test if the point is on the first side
+		Envelope2D env0 = new Envelope2D(1, 1, 4, 4);
+		Point2D p0 = new Point2D(1,2);
+
+		//Since xmin is equal p0.x the this should return  p0.y -ymin
+		assertTrue(env0._boundaryDistance(p0) == 1.0);
+
+		//Test if the point is on the top side
+		Envelope2D env1 = new Envelope2D(1, 1, 4, 4);
+		Point2D p1 = new Point2D(1,4);
+
+		//Since ymax is equal p0.y the this should return  ymax - ymin + pt.x - xmin
+		assertTrue(env1._boundaryDistance(p1) == 3.0);
+
+		//Test if the point is outside of the envelope
+		Envelope2D env2 = new Envelope2D(1, 1, 4, 4);
+		Point2D p2 = new Point2D(0,1);
+
+		//Since ymax is equal p0.y the this should return  ymax - ymin + pt.x - xmin
+		
+		assertTrue(env2._boundaryDistance(p2) == 13.0);
+
+	}
+	//Returns the side a point lies, 0 is left, 1 is top 2 is right 3 is bottom
+	@Test
+	public void test_envelopeSide(){
+		//if the point is between 0 and 3, it should return 0
+		Envelope2D env0 = new Envelope2D(1, 1, 4, 4);
+		Point2D p0 = new Point2D(0,0);
+		int a = env0._envelopeSide(p0);
+		assertTrue(a == 0);
+
+		//should be true since the point is on the lower boundary of the envelope
+		Envelope2D env1 = new Envelope2D(1, 1, 4, 4);
+		Point2D p1 = new Point2D(2,1);
+		int b = env1._envelopeSide(p1);
+		assertTrue(b == 3);
+
+
+	}
+	/** NEW TEST ENDS HERE */
+	
 	@Test
 	public void testIntersect() {
 		assertIntersection(new Envelope(0, 0, 5, 5), new Envelope(0, 0, 5, 5), new Envelope(0, 0, 5, 5));
