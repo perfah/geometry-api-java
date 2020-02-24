@@ -234,7 +234,6 @@ public class Envelope extends Geometry implements Serializable {
 	public void getCenter(Point point_out) {
 		// Branching coverage logic:
 		BranchCoverage bc = BranchCoverage.ofFunction("Envelope::getCenter");
-		BranchCoverage.printOnExit();
 
 		boolean isEmpty = isEmpty();
 		bc.addBranchingPoint(isEmpty);
@@ -313,7 +312,6 @@ public class Envelope extends Geometry implements Serializable {
 	public void merge(Point point) {
 		// Branching coverage logic:
 		BranchCoverage bc = BranchCoverage.ofFunction("Envelope::merge");
-		BranchCoverage.printOnExit();
 		bc.addBranchingPoint(point.isEmptyImpl());
 
 		_touch();

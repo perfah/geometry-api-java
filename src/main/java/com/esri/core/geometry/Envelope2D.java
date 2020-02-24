@@ -987,7 +987,7 @@ public final class Envelope2D implements Serializable {
 	int clipLine(Point2D p0, Point2D p1, int lineExtension, double[] segParams,
 			double[] boundaryDistances) {
 		BranchCoverage bc = BranchCoverage.ofFunction("Envelope2D::clipLine");
-		BranchCoverage.printOnExit();
+
 		bc.addBranchingPoint(boundaryDistances != null);
 
 		if (boundaryDistances != null) {
@@ -1253,7 +1253,7 @@ public final class Envelope2D implements Serializable {
 		double nn;
 
 		BranchCoverage bc = BranchCoverage.ofFunction("Envelope2D::sqrDistance");
-		BranchCoverage.printOnExit();
+
 		nn = xmin - pt2D.x;
 		if (nn > dx)
 			dx = nn;
