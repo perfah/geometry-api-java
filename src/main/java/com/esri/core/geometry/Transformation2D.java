@@ -119,12 +119,19 @@ public final class Transformation2D {
 
 	@Override
 	public boolean equals(Object other) {
+		BranchCoverage bc = BranchCoverage.ofFunction("Transformation2D::equals");
+
+		bc.addBranchingPoint(this == other);
 		if (this == other)
 			return true;
+
+		bc.addBranchingPoint(!(other instanceof Transformation2D));
 		if (!(other instanceof Transformation2D))
 			return false;
 		Transformation2D that = (Transformation2D) other;
 
+		bc.addBranchingPoint(xx == that.xx && xy == that.xy && xd == that.xd
+				&& yx == that.yx && yy == that.yy && yd == that.yd);
 		return (xx == that.xx && xy == that.xy && xd == that.xd
 				&& yx == that.yx && yy == that.yy && yd == that.yd);
 	}

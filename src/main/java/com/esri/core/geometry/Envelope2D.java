@@ -1019,25 +1019,38 @@ public final class Envelope2D implements Serializable {
 	// 4 - the segment is complitely inside of the clipping window
 	int clipLine(Point2D p0, Point2D p1, int lineExtension, double[] segParams,
 			double[] boundaryDistances) {
+		BranchCoverage bc = BranchCoverage.ofFunction("Envelope2D::clipLine");
+
+		bc.addBranchingPoint(boundaryDistances != null);
+
 		if (boundaryDistances != null) {
 			boundaryDistances[0] = -1.0;
 			boundaryDistances[1] = -1.0;
 		}
+
+		boolean if2 = false;
+		boolean if3 = false;
+		boolean if4 = false;
+		boolean if5 = false;
+		boolean if6 = false;
 
 		double[] tOld = new double[2];// LOCALREFCLASS1(ArrayOf(double), int,
 										// tOld, 2);
 		int modified = 0;
 
 		Point2D delta = new Point2D(p1.x - p0.x, p1.y - p0.y);
-
+		bc.addBranchingPoint(delta.x == 0.0 && delta.y == 0.0);
 		if (delta.x == 0.0 && delta.y == 0.0) // input line degenerates to a
 												// point
 		{
 			segParams[0] = 0.0;
 			segParams[1] = 0.0;
-			return contains(p0) ? 4 : 0;
+			bc.simulateReturn();
+			//return contains(p0) ? 4 : 0;
 		}
 
+		bc.addBranchingPoint((lineExtension & 1) != 0);
+		bc.addBranchingPoint((lineExtension & 2) != 0);
 		segParams[0] = ((lineExtension & 1) != 0) ? NumberUtils.negativeInf()
 				: 0.0;
 		segParams[1] = ((lineExtension & 2) != 0) ? NumberUtils.positiveInf()
@@ -1049,22 +1062,42 @@ public final class Envelope2D implements Serializable {
 				&& clipLineAuxiliary(-delta.x, p0.x - xmax, segParams)
 				&& clipLineAuxiliary(delta.y, ymin - p0.y, segParams)
 				&& clipLineAuxiliary(-delta.y, p0.y - ymax, segParams)) {
+					if2 = true;
 			if (segParams[1] < tOld[1]) {
+				if3 = true;
 				p1.scaleAdd(segParams[1], delta, p0);
 				_snapToBoundary(p1); // needed for accuracy
 				modified |= 2;
 
-				if (boundaryDistances != null)
+				if (boundaryDistances != null){
 					boundaryDistances[1] = _boundaryDistance(p1);
+					if4 = true;
+				}
+
 			}
 			if (segParams[0] > tOld[0]) {
+				if5 = true;
 				p0.scaleAdd(segParams[0], delta, p0);
 				_snapToBoundary(p0); // needed for accuracy
 				modified |= 1;
 
-				if (boundaryDistances != null)
+				if (boundaryDistances != null){
 					boundaryDistances[0] = _boundaryDistance(p0);
+					if6 = true;
+				}
+
 			}
+		}
+		bc.addBranchingPoint(if2);
+		bc.addBranchingPoint(if3);
+		bc.addBranchingPoint(if4);
+		bc.addBranchingPoint(if5);
+		bc.addBranchingPoint(if6);
+		//has to be readded for return
+		if (delta.x == 0.0 && delta.y == 0.0) // input line degenerates to a
+												// point
+		{
+			return contains(p0) ? 4 : 0;
 		}
 
 		return modified;
@@ -1187,6 +1220,10 @@ public final class Envelope2D implements Serializable {
 		double dy = 0;
 		double nn;
 
+
+
+
+
 		nn = xmin - xmax_;
 		if (nn > dx)
 			dx = nn;
@@ -1195,9 +1232,12 @@ public final class Envelope2D implements Serializable {
 		if (nn > dy)
 			dy = nn;
 
+
+
 		nn = xmin_ - xmax;
 		if (nn > dx)
 			dx = nn;
+
 
 		nn = ymin_ - ymax;
 		if (nn > dy)
@@ -1258,22 +1298,25 @@ public final class Envelope2D implements Serializable {
 		double dy = 0;
 		double nn;
 
+		BranchCoverage bc = BranchCoverage.ofFunction("Envelope2D::sqrDistance");
+
 		nn = xmin - pt2D.x;
 		if (nn > dx)
 			dx = nn;
+			bc.addBranchingPoint(nn > dx);
 
 		nn = ymin - pt2D.y;
 		if (nn > dy)
 			dy = nn;
-
+		bc.addBranchingPoint(nn > dy);
 		nn = pt2D.x - xmax;
 		if (nn > dx)
 			dx = nn;
-
+		bc.addBranchingPoint(nn > dx);
 		nn = pt2D.y - ymax;
 		if (nn > dy)
 			dy = nn;
-
+		bc.addBranchingPoint(nn > dy);
 		return dx * dx + dy * dy;
 	}
 

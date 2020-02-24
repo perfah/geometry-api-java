@@ -44,7 +44,7 @@ public class TestEnvelope
 	}
 	@Test
 	/* Merge takes a Point as input and increas the bouandary of the envelope to contain the point.
-	 *If the point is empty the envelope remains the same or if the envelope is empty the coordinates 
+	 *If the point is empty the envelope remains the same or if the envelope is empty the coordinates
 	 *of the point is assigned to the envelope */
 	public void testMerge(){
 
@@ -58,7 +58,7 @@ public class TestEnvelope
 		/*This should be false since env1 should change depending on point p */
 		env1.merge(p);
 		assertFalse(env1.equals(env2));
-		
+
 		/* This assert should be true since the point is empty and therefore env2 should not change */
 		Point p1 = new Point();
 		env2.merge(p1);
@@ -70,7 +70,7 @@ public class TestEnvelope
 	/** TESTEST ENVELOPE2D **
 	 * ClipLine modify a line to be inside a envelope if possible */
 	public void TestClipLine(){
-		
+
 		//checking if segPrama is 0 and the segment is outside of the clipping window
 		//covers first return
 		Envelope2D env0 = new Envelope2D(1, 1, 4, 4);
@@ -86,7 +86,7 @@ public class TestEnvelope
 		int a = env0.clipLine(p1, p2, lineExtension, segParams, boundaryDistances);
 		//should be true since the points are inside the envelope
 		assertTrue(a == 4);
-		
+
 		// Changes p3 to fit the envelop, the line is on the edge of the envelope
 		Envelope2D env1 = new Envelope2D(1, 1, 4, 4);
 		Point2D p3 = new Point2D(1,10);
@@ -110,7 +110,7 @@ public class TestEnvelope
 		int d = env3.clipLine(p7, p8, lineExtension, segParams, boundaryDistances);
 		assertTrue(d == 0);
 	}
-	
+
 	@Test
 	/**Caluculates the distance between the envlelope and a 2D point */
 	public void testSqrDistances(){
@@ -121,12 +121,12 @@ public class TestEnvelope
 
 		Envelope2D env1 = new Envelope2D(1, 1, 4, 4);
 		Point2D p1 = new Point2D(1,0);
-		
+
 		assertTrue(env0.sqrDistance(p1) == 1.0);
 
 	}
 	/**The functon returns the max distance between two envelopes */
-@Test 
+@Test
 	public void testsqrMaxDistance(){
 		// If one of the envelopes is empty the funtions should return NaN
 		Envelope2D env0 = new Envelope2D();
@@ -135,11 +135,11 @@ public class TestEnvelope
 		double a = env0.sqrMaxDistance(env1);
 		// NaN does not equals NaN
 		assertTrue(a != a);
-		
+
 		//A testacase that covers the rest of the branches
 		Envelope2D env2 = new Envelope2D(5,1,6,1);
 		Envelope2D env3 = new Envelope2D(1, 1, 4, 4);
-		
+
 		assertTrue(env2.sqrMaxDistance(env3) == 34.0);
 	}
 	/** Snaps a point to the boandary of the envelope */
@@ -151,7 +151,7 @@ public class TestEnvelope
 		Point2D p1 = new Point2D(4,1);
 
 		p0 = env0._snapToBoundary(p0);
-		
+
 		assertTrue(p0.equals(p1));
 
 		//Test if the the point is on the boundary of the envelope
@@ -160,7 +160,7 @@ public class TestEnvelope
 		Point2D p3 = new Point2D(1,4);
 
 		p2 = env0._snapToBoundary(p2);
-		
+
 		assertTrue(p2.equals(p3));
 
 		//Test if the point is inside the envelope
@@ -181,7 +181,7 @@ public class TestEnvelope
     // boundary,
     // it is more efficient to perform ProjectToBoundary before using this
 	// function)
-	
+
 	@Test
 	public void test_boundaryDistance(){
 		//test if the point is on the first side
@@ -203,7 +203,7 @@ public class TestEnvelope
 		Point2D p2 = new Point2D(0,1);
 
 		//Since ymax is equal p0.y the this should return  ymax - ymin + pt.x - xmin
-		
+
 		assertTrue(env2._boundaryDistance(p2) == 13.0);
 
 	}
@@ -225,7 +225,7 @@ public class TestEnvelope
 
 	}
 	/** NEW TEST ENDS HERE */
-	
+
 	@Test
 	public void testIntersect() {
 		assertIntersection(new Envelope(0, 0, 5, 5), new Envelope(0, 0, 5, 5), new Envelope(0, 0, 5, 5));
@@ -266,7 +266,7 @@ public class TestEnvelope
 		env1.queryInterval(VertexDescription.Semantics.POSITION, 0).equals(new Envelope1D(10, 11));
 		env1.queryInterval(VertexDescription.Semantics.POSITION, 0).equals(new Envelope1D(9, 13));
 	}
-	
+
 	private static void assertIntersection(Envelope envelope, Envelope other, Envelope intersection) {
 		boolean intersects = envelope.intersect(other);
 		assertTrue(intersects);
@@ -278,6 +278,5 @@ public class TestEnvelope
 		assertFalse(intersects);
 		assertTrue(envelope.isEmpty());
 	}
-	
-}
 
+}
