@@ -335,6 +335,38 @@ public final class Line extends Segment implements Serializable {
 		}
 	}
 
+	public int intersectionWithAxis2D2(boolean b_axis_x, double ordinate,
+			double[] result_ordinates, double[] parameters) {
+		
+		
+		return b_axis_x ? 	intersectionWithAxis2DHelper(b_axis_x, m_yEnd, m_yStart, ordinate, result_ordinates, parameters) :
+							intersectionWithAxis2DHelper(b_axis_x, m_xEnd, m_xStart, ordinate, result_ordinates, parameters);
+		
+	}
+
+	public int intersectionWithAxis2DHelper(boolean b_axis_x, double m_End, double m_Start, double ordinate, double[] result_ordinates, double[] parameters) {
+		double a = (m_End - m_Start);
+
+		if (a == 0)
+			return (ordinate == m_End) ? -1 : 0;
+
+		double t = (ordinate - m_Start) / a;
+
+		if (t < 0.0 || t > 1.0)
+			return 0;
+
+		if (result_ordinates != null)
+			(result_ordinates)[0] = b_axis_x ? getCoordX_(t) : getCoordY_(t);
+
+		if (parameters != null)
+			(parameters)[0] = t;
+
+		return 1;
+	}
+
+
+
+
 	// line segment can have 0 or 1 intersection interval with clipEnv2D.
 	// The function return 0 or 2 segParams (e.g. 0.0, 0.4; or 0.1, 0.9; or 0.6,
 	// 1.0; or 0.0, 1.0)
@@ -745,8 +777,6 @@ public final class Line extends Segment implements Serializable {
 		bc.addBranchingPoint(if1 && param1 != null);
 		bc.addBranchingPoint(if1 && param2 != null);
 		bc.addBranchingPoint(if1 && intersectionPoints != null);
-
-		// Actual code:
 
 		int counter = 0;
 
