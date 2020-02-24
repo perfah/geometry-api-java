@@ -66,7 +66,7 @@ public final class Envelope2D implements Serializable {
 		env.setCoords(other);
 		return env;
 	}
-	
+
 	public Envelope2D() {
 		setEmpty();
 	}
@@ -86,7 +86,7 @@ public final class Envelope2D implements Serializable {
 	{
 		return SIZE_OF_ENVELOPE2D;
 	}
-	
+
 	public void setCoords(double _x, double _y) {
 		xmin = _x;
 		ymin = _y;
@@ -312,7 +312,7 @@ public final class Envelope2D implements Serializable {
 																	// projections
 																	// overlap
 	}
-	
+
 	/**
 	 * Intersects this envelope with the other and stores result in this
 	 * envelope.
@@ -348,7 +348,7 @@ public final class Envelope2D implements Serializable {
 
 	/**
 	 * Queries a corner of the envelope.
-	 * 
+	 *
 	 * @param index
 	 *            Indicates a corner of the envelope.
 	 *            <p>
@@ -360,7 +360,7 @@ public final class Envelope2D implements Serializable {
 	 *            <p>
 	 *            3 means lower right or (xmax, ymin)
 	 * @return Point at a corner of the envelope.
-	 * 
+	 *
 	 */
 	public Point2D queryCorner(int index) {
 		switch (index) {
@@ -430,7 +430,7 @@ public final class Envelope2D implements Serializable {
 			corners[2].setCoords(xmax, ymax);
 		else
 			corners[2] = new Point2D(xmax, ymax);
-		
+
 		if (corners[3] != null)
 			corners[3].setCoords(xmin, ymax);
 		else
@@ -582,7 +582,7 @@ public final class Envelope2D implements Serializable {
 	/**
 	 * Gets the center point of the envelope. The Center Point occurs at: ((XMin
 	 * + XMax) / 2, (YMin + YMax) / 2).
-	 * 
+	 *
 	 * @return the center point
 	 */
 	public Point2D getCenter() {
@@ -702,7 +702,7 @@ public final class Envelope2D implements Serializable {
 		if (isEmpty()) {
 			return NumberUtils.hash(NumberUtils.TheNaN);
 		}
-		
+
 		int hash = NumberUtils.hash(xmin);
 		hash = NumberUtils.hash(hash, xmax);
 		hash = NumberUtils.hash(hash, ymin);
@@ -941,14 +941,14 @@ public final class Envelope2D implements Serializable {
 				 * (ymin - p1.y) / dy; p1.y = ymin; } else if (c1 &
 				 * YGREATERYMAX) { p1.x += dx * (ymax - p1.y) / dy; p1.y = ymax;
 				 * }
-				 * 
+				 *
 				 * c1 = _clipCode(p1, ClipRect); } else { if (c2 & XLESSXMIN) {
 				 * p2.y += dy * (xmin - p2.x) / dx; p2.x = xmin; } else if (c2 &
 				 * XGREATERXMAX) { p2.y += dy * (xmax - p2.x) / dx; p2.x = xmax;
 				 * } else if (c2 & YLESSYMIN) { p2.x += dx * (ymin - p2.y) / dy;
 				 * p2.y = ymin; } else if (c2 & YGREATERYMAX) { p2.x += dx *
 				 * (ymax - p2.y) / dy; p2.y = ymax; }
-				 * 
+				 *
 				 * c2 = _clipCode(p2, ClipRect); }
 				 */
 			}
@@ -986,25 +986,38 @@ public final class Envelope2D implements Serializable {
 	// 4 - the segment is complitely inside of the clipping window
 	int clipLine(Point2D p0, Point2D p1, int lineExtension, double[] segParams,
 			double[] boundaryDistances) {
+		BranchCoverage bc = BranchCoverage.ofFunction("Envelope2D::clipLine");
+
+		bc.addBranchingPoint(boundaryDistances != null);
+
 		if (boundaryDistances != null) {
 			boundaryDistances[0] = -1.0;
 			boundaryDistances[1] = -1.0;
 		}
+
+		boolean if2 = false;
+		boolean if3 = false;
+		boolean if4 = false;
+		boolean if5 = false;
+		boolean if6 = false;
 
 		double[] tOld = new double[2];// LOCALREFCLASS1(ArrayOf(double), int,
 										// tOld, 2);
 		int modified = 0;
 
 		Point2D delta = new Point2D(p1.x - p0.x, p1.y - p0.y);
-
+		bc.addBranchingPoint(delta.x == 0.0 && delta.y == 0.0);
 		if (delta.x == 0.0 && delta.y == 0.0) // input line degenerates to a
 												// point
 		{
 			segParams[0] = 0.0;
 			segParams[1] = 0.0;
-			return contains(p0) ? 4 : 0;
+			bc.simulateReturn();
+			//return contains(p0) ? 4 : 0;
 		}
 
+		bc.addBranchingPoint((lineExtension & 1) != 0);
+		bc.addBranchingPoint((lineExtension & 2) != 0);
 		segParams[0] = ((lineExtension & 1) != 0) ? NumberUtils.negativeInf()
 				: 0.0;
 		segParams[1] = ((lineExtension & 2) != 0) ? NumberUtils.positiveInf()
@@ -1016,22 +1029,42 @@ public final class Envelope2D implements Serializable {
 				&& clipLineAuxiliary(-delta.x, p0.x - xmax, segParams)
 				&& clipLineAuxiliary(delta.y, ymin - p0.y, segParams)
 				&& clipLineAuxiliary(-delta.y, p0.y - ymax, segParams)) {
+					if2 = true;
 			if (segParams[1] < tOld[1]) {
+				if3 = true;
 				p1.scaleAdd(segParams[1], delta, p0);
 				_snapToBoundary(p1); // needed for accuracy
 				modified |= 2;
 
-				if (boundaryDistances != null)
+				if (boundaryDistances != null){
 					boundaryDistances[1] = _boundaryDistance(p1);
+					if4 = true;
+				}
+
 			}
 			if (segParams[0] > tOld[0]) {
+				if5 = true;
 				p0.scaleAdd(segParams[0], delta, p0);
 				_snapToBoundary(p0); // needed for accuracy
 				modified |= 1;
 
-				if (boundaryDistances != null)
+				if (boundaryDistances != null){
 					boundaryDistances[0] = _boundaryDistance(p0);
+					if6 = true;
+				}
+
 			}
+		}
+		bc.addBranchingPoint(if2);
+		bc.addBranchingPoint(if3);
+		bc.addBranchingPoint(if4);
+		bc.addBranchingPoint(if5);
+		bc.addBranchingPoint(if6);
+		//has to be readded for return
+		if (delta.x == 0.0 && delta.y == 0.0) // input line degenerates to a
+												// point
+		{
+			return contains(p0) ? 4 : 0;
 		}
 
 		return modified;
@@ -1154,6 +1187,10 @@ public final class Envelope2D implements Serializable {
 		double dy = 0;
 		double nn;
 
+
+
+
+
 		nn = xmin - xmax_;
 		if (nn > dx)
 			dx = nn;
@@ -1162,9 +1199,12 @@ public final class Envelope2D implements Serializable {
 		if (nn > dy)
 			dy = nn;
 
+
+
 		nn = xmin_ - xmax;
 		if (nn > dx)
 			dx = nn;
+
 
 		nn = ymin_ - ymax;
 		if (nn > dy)
@@ -1172,7 +1212,7 @@ public final class Envelope2D implements Serializable {
 
 		return dx * dx + dy * dy;
 	}
-	
+
 	/**
 	 *Returns squared max distance between two bounding boxes. This is furthest distance between points on the two envelopes.
 	 *
@@ -1199,7 +1239,7 @@ public final class Envelope2D implements Serializable {
 
 		return dist;
 	}
-	
+
 	/**
 	 * Calculates minimum squared distance from this envelope to the point.
 	 * Returns 0 for empty envelopes.
@@ -1212,22 +1252,25 @@ public final class Envelope2D implements Serializable {
 		double dy = 0;
 		double nn;
 
+		BranchCoverage bc = BranchCoverage.ofFunction("Envelope2D::sqrDistance");
+
 		nn = xmin - pt2D.x;
 		if (nn > dx)
 			dx = nn;
+			bc.addBranchingPoint(nn > dx);
 
 		nn = ymin - pt2D.y;
 		if (nn > dy)
 			dy = nn;
-
+		bc.addBranchingPoint(nn > dy);
 		nn = pt2D.x - xmax;
 		if (nn > dx)
 			dx = nn;
-
+		bc.addBranchingPoint(nn > dx);
 		nn = pt2D.y - ymax;
 		if (nn > dy)
 			dy = nn;
-
+		bc.addBranchingPoint(nn > dy);
 		return dx * dx + dy * dy;
 	}
 
@@ -1248,7 +1291,7 @@ public final class Envelope2D implements Serializable {
 			env1D.setCoords(ymin, ymax);
 		}
 	}
-	
+
 	 private void writeObject(java.io.ObjectOutputStream out) throws IOException {
 		 out.defaultWriteObject();
 	 }
