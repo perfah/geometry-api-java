@@ -266,7 +266,43 @@ public class TestEnvelope
 		env1.queryInterval(VertexDescription.Semantics.POSITION, 0).equals(new Envelope1D(10, 11));
 		env1.queryInterval(VertexDescription.Semantics.POSITION, 0).equals(new Envelope1D(9, 13));
 	}
-	
+
+	@Test
+	public void testIntersect1D(){
+		Envelope1D _this;
+		Envelope1D other;
+
+		// Check that '_this' envelope is no larger than envelope 'other':
+		_this = new Envelope1D(5.0, 25.0);
+		other = new Envelope1D(10.0, 20.0);
+		_this.intersect(other);
+		assertEquals(_this.vmin, other.vmin, 0.00000000000001);
+		assertFalse(_this.isEmpty());
+		assertFalse(other.isEmpty());
+
+		// If envelope 'other' is empty, '_this' envelope should become empty:
+		_this = new Envelope1D(5.0, 25.0);
+		other = new Envelope1D(10.0, 20.0);
+		other.setEmpty();
+		_this.intersect(other);
+		assertTrue(_this.isEmpty());
+	}
+
+	@Test
+	public void testInflate1D() {
+		Envelope1D _this;
+
+		_this = new Envelope1D();
+		_this.setEmpty();
+		_this.inflate(5.0);
+		assertTrue(_this.isEmpty());
+
+		_this = new Envelope1D(-5.0, 5.0);
+		_this.inflate(5.0);
+		assertEquals(_this.vmin, -10, 0.000000001);
+		assertEquals(_this.vmax, 10, 0.000000001);
+	}
+
 	private static void assertIntersection(Envelope envelope, Envelope other, Envelope intersection) {
 		boolean intersects = envelope.intersect(other);
 		assertTrue(intersects);
