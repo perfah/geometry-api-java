@@ -70,11 +70,9 @@ public class TestPolygonUtils extends TestCase {
 		a = new Line(0.0, 0.0, 0.0, 0.0);
 		b = new Line(0.0, 0.0, 0.0, 0.0);
 
-		assertEquals(a.intersectLineLineExact(a, b, intersectionPoints, params1, params2), 2);
-
 		assertEquals(a.intersectLineLineExact(a, b, intersectionPoints, params1, params2), 4);
 
-    
+
 
 		// Line A starts where line B ends and vice versa (mirror opposite):
 		a = new Line(0.0, 0.0, 1.0, 1.0);
